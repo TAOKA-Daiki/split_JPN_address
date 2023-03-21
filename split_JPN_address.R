@@ -10,12 +10,13 @@ library(zipangu)
 library(rvest)
 
 ### 1. Define Function ----
-split_address <- function(address)){
+split_address <- function(address, split.num = FALSE){
   require(magrittr)
   require(stringr)
   pref <- c()
   city <- c()
   street <- c()
+  number <- c()
   
   gyosei <- c("大阪市", "横浜市", "名古屋市", "京都市", "札幌市", "さいたま市", "神戸市",
               "広島市", "新潟市", "川崎市", "浜松市", "堺市", "北九州市", "福岡市", "千葉市", 
@@ -60,24 +61,32 @@ split_address <- function(address)){
     street <- str_extract(address, str_c("(?<=", pref, city, ")[:graph:]+$"))
   }
   
-  return(list(pref = pref, city = city, street = street))
+  if(split.num == TRUE){
+    number <- str_extract(street, pattern = "(?<=[:graph:])(以下に記載が無い場合$|[:digit:].*$)")
+    street <- if_else(
+      is.na(number),
+      street,
+      str_extract(street, pattern = str_c("[:graph:]+(?=", number, ")")))
+    
+    return(list(pref = pref, city = city, street = street, number = number))
+  }else{
+    return(list(pref = pref, city = city, street = street))
+  }
 }
 
-# split_address("福井県福井市市ノ瀬町")
-# split_address("島根県邑智郡美郷町村之郷")
-# split_address("長崎県大村市松原本町郷")
-# split_address("山形県北村山郡大石田町四日町")
-# split_address("富山県中新川郡上市町浅生")
-# split_address("東京都西多摩郡檜原村数馬")
-# split_address("佐賀県杵島郡大町町大字大町")
-# split_address("奈良県大和郡山市北郡山町")
-# split_address("広島県廿日市市宮島町（新町）")
-# split_address("群馬県佐波郡玉村町")
-# split_address("山梨県西矢代郡市川三郷町")
-# split_address("東京都大島町元町")
-# split_address("京都府京都市右京区西京極郡附洲町")
-# split_address("奈良県高市郡高取町谷田")
-# split_address("北海道余市郡仁木町以下に掲載がない場合")
+split_address("福井県福井市市ノ瀬町")
+split_address("島根県邑智郡美郷町村之郷")
+split_address("長崎県大村市松原本町郷")
+split_address("山形県北村山郡大石田町四日町")
+split_address("富山県中新川郡上市町浅生")
+split_address("東京都西多摩郡檜原村数馬")
+split_address("佐賀県杵島郡大町町大字大町")
+split_address("奈良県大和郡山市北郡山町")
+split_address("広島県廿日市市宮島町（新町）")
+split_address("東京都大島町元町３－５５", split.num = TRUE)
+split_address("京都府京都市右京区西京極郡附洲町2", split.num = TRUE)
+split_address("奈良県高市郡高取町谷田1-4", split.num = TRUE)
+split_address("北海道余市郡仁木町以下に掲載がない場合", split.num = TRUE)
 
 
 ### 2. Validation ----
@@ -103,18 +112,19 @@ test_df <- answer_df %>%
   dplyr::transmute(address = str_c(pref, city, street))
 
 # test: split JPN address into prefecture, city, street
-system.time(splitted_df <- test_df %>%
-  dplyr::transmute(
-    pref = map_chr(address, ~split_address(.)$pref),
-    city = map_chr(address, ~split_address(.)$city),
-    street = map_chr(address, ~split_address(.)$street)
-  )
+system.time(
+  splitted_df <- test_df %>%
+    dplyr::transmute(
+      pref = map_chr(address, ~split_address(.)$pref),
+      city = map_chr(address, ~split_address(.)$city),
+      street = map_chr(address, ~split_address(.)$street)
+    )
 )
 # Note: It probably takes few minutes.
-# user:314.07, system:3.54, duration:317.74
+# user:313.81, system:3.80, duration:317.81
 
 # validation
-all_equal(answer_df, splitted_df) # TRUE
+all.equal(answer_df, splitted_df) # TRUE
 
 ### 3. Performance Comparison with zipangu::separate_address ----
 # n = 10
