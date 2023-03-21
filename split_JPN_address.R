@@ -10,7 +10,7 @@ library(zipangu)
 library(rvest)
 
 ### 1. Define Function ----
-split_address <- function(address){
+split_address <- function(address)){
   require(magrittr)
   require(stringr)
   pref <- c()
@@ -63,26 +63,21 @@ split_address <- function(address){
   return(list(pref = pref, city = city, street = street))
 }
 
-split_address("東京都市川市中央")
-split_address("福井県福井市市ノ瀬町")
-split_address("島根県邑智郡美郷町村之郷")
-split_address("長崎県大村市松原本町郷")
-split_address("山形県北村山郡大石田町豊田")
-split_address("富山県中新川郡上市町浅生")
-split_address("福島県郡山市久留米")
-split_address("東京都西多摩郡檜原村数馬")
-split_address("佐賀県杵島郡大町町福母")
-split_address("奈良県大和郡山市小林町西")
-split_address("群馬県佐波郡玉村町中央")
-split_address("愛知県名古屋市中村区中央")
-split_address("山梨県西矢代郡市川三郷町吉村")
-split_address("三重県鈴鹿市郡山町")
-split_address("東京都大島町以下に掲載がない場合")
-split_address("京都府京都市右京区西京極郡附洲町")
-split_address("東京都武蔵村山市本町")
-split_address("東京都小平市小川東町")
-split_address("奈良県高市郡高取町谷田")
-split_address("北海道余市郡仁木町以下に掲載がない場合")
+# split_address("福井県福井市市ノ瀬町")
+# split_address("島根県邑智郡美郷町村之郷")
+# split_address("長崎県大村市松原本町郷")
+# split_address("山形県北村山郡大石田町四日町")
+# split_address("富山県中新川郡上市町浅生")
+# split_address("東京都西多摩郡檜原村数馬")
+# split_address("佐賀県杵島郡大町町大字大町")
+# split_address("奈良県大和郡山市北郡山町")
+# split_address("広島県廿日市市宮島町（新町）")
+# split_address("群馬県佐波郡玉村町")
+# split_address("山梨県西矢代郡市川三郷町")
+# split_address("東京都大島町元町")
+# split_address("京都府京都市右京区西京極郡附洲町")
+# split_address("奈良県高市郡高取町谷田")
+# split_address("北海道余市郡仁木町以下に掲載がない場合")
 
 
 ### 2. Validation ----
